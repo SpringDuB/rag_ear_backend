@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sse_starlette.sse import EventSourceResponse
 from sqlalchemy.orm import Session
 
-from ....schemas import ChatMessage, ChatRequest
+from schemas import ChatMessage, ChatRequest
 
 
 class ChatPayload(ChatRequest):

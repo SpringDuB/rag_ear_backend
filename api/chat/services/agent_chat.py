@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 # from fastapi.responses import EventSourceResponse
 from sse_starlette.sse import EventSourceResponse
-from ....schemas import ChatMessage
+from schemas import ChatMessage
 
 
 class AgentPayload(ChatMessage):
