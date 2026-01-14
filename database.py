@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from .config import settings
+from config import settings
 
 
 connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
@@ -21,6 +21,6 @@ def get_db():
 
 def init_db():
     # Imported lazily to avoid circular imports.
-    from . import models  # noqa: F401
+    import models  # noqa: F401
 
     models.Base.metadata.create_all(bind=engine)

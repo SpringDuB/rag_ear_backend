@@ -29,7 +29,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r backend/requirements.txt
 cp backend/.env.example .env  # 如需修改秘钥/数据库路径请调整
-uvicorn backend.main:app --reload
+uvicorn main:app --reload
 ```
 
 首次启动会自动生成 RSA 密钥（默认保存在 `backend/keys/`）并创建 SQLite 数据库。

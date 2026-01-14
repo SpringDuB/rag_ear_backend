@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 from sqlalchemy.orm import Session
 
-from ...database import get_db
-from ...schemas import ChatMessage, Message
-from .services.agent_chat import AgentPayload, handle_agent_chat
-from .services.rag_chat import ChatPayload as RagPayload, handle_rag_chat
-from .services.simple_chat import handle_simple_chat
+from database import get_db
+from schemas import ChatMessage, Message
+from api.chat.services.agent_chat import AgentPayload, handle_agent_chat
+from api.chat.services.rag_chat import ChatPayload as RagPayload, handle_rag_chat
+from api.chat.services.simple_chat import handle_simple_chat
 
 router = APIRouter(prefix="/api/chat", tags=["Chat"])
 

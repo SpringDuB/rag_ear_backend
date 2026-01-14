@@ -7,11 +7,11 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from ..config import settings
-from ..database import get_db
-from ..models import User
-from ..schemas import EncryptedPayload, Message, PublicKeyResponse, TokenResponse, UserRead
-from ..utils.crypto import decrypt_payload, export_public_key_pem, load_or_create_key_pair
+from config import settings
+from database import get_db
+from models import User
+from schemas import EncryptedPayload, Message, PublicKeyResponse, TokenResponse, UserRead
+from utils.crypto import decrypt_payload, export_public_key_pem, load_or_create_key_pair
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 

@@ -4,11 +4,11 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import auth
-from .api.chat.router import router as chat_router
-from .config import settings
-from .database import init_db
-from .utils.crypto import load_or_create_key_pair
+from api import auth
+from api.chat.router import router as chat_router
+from config import settings
+from database import init_db
+from utils.crypto import load_or_create_key_pair
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
