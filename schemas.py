@@ -30,7 +30,7 @@ class UserBase(BaseModel):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserCreate(AuthPayload):
@@ -52,8 +52,7 @@ class UserRead(BaseModel):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
-        from_attributes=True
+        from_attributes = True
 
 
 class TokenResponse(BaseModel):
@@ -80,3 +79,51 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage]
     top_k: int | None = Field(default=3, description="RAG检索TopK，可选")
     model: str | None = None
+
+
+# ===== File System =====
+class FolderCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
+    parent_id: int | None = Field(default=None, description="父文件夹ID；为空表示根目录")
+
+
+class FolderUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=255, description="重命名")
+    parent_id: int | None = Field(default=None, description="移动到目标父文件夹；为空表示移动到根目录")
+
+
+class FolderRead(BaseModel):
+    id: int
+    owner_id: int
+    parent_id: int | None
+    name: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class FileRead(BaseModel):
+    id: int
+    owner_id: int
+    folder_id: int | None
+    name: str
+    mime_type: str | None = None
+    size: int
+    sha256: str | None = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class FolderChildren(BaseModel):
+    folders: list[FolderRead] = Field(default_factory=list)
+    files: list[FileRead] = Field(default_factory=list)
+
+
+class FileUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=255, description="重命名")
+    folder_id: int | None = Field(default=None, description="移动到目标文件夹；为空表示移动到根目录")
