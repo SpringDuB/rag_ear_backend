@@ -2,5 +2,5 @@
 AGENTS.md
 *.pem
 node_modules
-
+.idea
 .vscode
