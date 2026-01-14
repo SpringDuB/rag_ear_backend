@@ -1,0 +1,6 @@
+.env
+AGENTS.md
+*.pem
+node_modules
+
+.vscode
