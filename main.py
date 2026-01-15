@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api import auth
 from api.chat.router import router as chat_router
+from api import files
+
+
 from config import settings
 from database import init_db
 from utils.crypto import load_or_create_key_pair
@@ -29,7 +32,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(chat_router)
-app.include_router(fs_router)
+app.include_router(files.router)
 
 
 @app.on_event("startup")
