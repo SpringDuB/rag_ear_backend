@@ -9,6 +9,7 @@ from api.chat.router import router as chat_router
 from config import settings
 from database import init_db
 from utils.crypto import load_or_create_key_pair
+from api.files import router as fs_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

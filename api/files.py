@@ -9,11 +9,11 @@ from fastapi.responses import FileResponse
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from ..config import settings
-from ..database import get_db
-from ..models import FileObject, Folder, User
-from ..schemas import FileRead, FileUpdate, FolderChildren, FolderCreate, FolderRead, FolderUpdate
-from .auth import get_current_user
+from config import settings
+from database import get_db
+from models import FileObject, Folder, User
+from schemas import FileRead, FileUpdate, FolderChildren, FolderCreate, FolderRead, FolderUpdate
+from api.auth import get_current_user
 
 router = APIRouter(prefix="/api/fs", tags=["FileSystem"])
 
