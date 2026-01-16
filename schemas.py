@@ -114,6 +114,7 @@ class FileRead(BaseModel):
     sha256: str | None = None
     created_at: datetime
     updated_at: datetime
+    storage_path: str | None = None
 
     class Config:
         from_attributes = True

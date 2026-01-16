@@ -56,8 +56,8 @@ def _get_folder_owned(db: Session, owner_id: int, folder_id: int) -> Folder:
     return folder
 
 
-def _get_file_owned(db: Session, owner_id: int, file_id: int) -> FileObject:
-    obj = db.query(FileObject).filter(FileObject.id == file_id, FileObject.owner_id == owner_id).first()
+def _get_file_owned(db: Session, file_id: int) -> FileObject:
+    obj = db.query(FileObject).filter(FileObject.id == file_id).first()
     if not obj:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文件不存在")
     return obj
@@ -272,7 +272,7 @@ async def upload_file(
     storage_dir = Path(settings.storage_root) / storage_rel_dir
     storage_dir.mkdir(parents=True, exist_ok=True)
 
-    storage_name = file.filename
+    storage_name = uuid.uuid4().hex
     storage_rel_path = (storage_rel_dir / storage_name).as_posix()
     storage_abs_path = (Path(settings.storage_root) / storage_rel_dir / storage_name).resolve()
 
@@ -319,7 +319,7 @@ def get_file_meta(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    obj = _get_file_owned(db, current_user.id, file_id)
+    obj = _get_file_owned(db, file_id)
     return FileRead.from_orm(obj)
 
 
