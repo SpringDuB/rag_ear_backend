@@ -12,7 +12,11 @@ from qcloud_cos import CosConfig, CosS3Client
 from qcloud_cos.cos_exception import CosClientError, CosServiceError
 from sse_starlette.sse import EventSourceResponse
 
+from utils import DocumentParseError, DocumentParser
+
 DEFAULT_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+SUPPORTED_DOC_EXTS = {".pdf", ".docx", ".csv", ".xlsx", ".pptx"}
+IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".tif", ".tiff"}
 
 
 def get_cos_client():
@@ -79,9 +83,18 @@ async def upload_files_to_cos(upload_files: List[UploadFile]) -> List[Dict[str, 
     return uploaded
 
 
-def build_message_content(text: str, uploads: Optional[List[Dict[str, Any]]]) -> Any:
+def build_message_content(
+    text: str,
+    uploads: Optional[List[Dict[str, Any]]],
+    doc_sections: Optional[List[str]] = None,
+) -> Any:
     files = uploads or []
+    sections = []
+    if doc_sections:
+        sections.append("\n\n".join(doc_sections))
     if not files:
+        if sections:
+            return text + "\n\n" + "\n\n".join(sections)
         return text
 
     link_lines = []
@@ -97,9 +110,15 @@ def build_message_content(text: str, uploads: Optional[List[Dict[str, Any]]]) ->
             link_lines.append(f"- {item.get('original_name') or '附件'}: {url}")
 
     link_text = "\n\n附件链接：\n" + "\n".join(link_lines) if link_lines else ""
+    extra_text = "\n\n".join(sections) if sections else ""
+    combined = text
+    if extra_text:
+        combined += "\n\n" + extra_text
+    if link_text:
+        combined += link_text
     if image_parts:
-        return [{"type": "text", "text": text + link_text}, *image_parts]
-    return text + link_text
+        return [{"type": "text", "text": combined}, *image_parts]
+    return combined
 
 
 def flatten_delta_content(delta: Any) -> str:
@@ -125,8 +144,54 @@ async def handle_simple_chat(prompt: str, upload_files: List[UploadFile], model:
     if not api_key:
         raise HTTPException(status_code=500, detail="OPENAI_API_KEY 未配置")
 
-    uploaded = await upload_files_to_cos(upload_files)
-    user_message = {"role": "user", "content": build_message_content(prompt, uploaded)}
+    image_files: List[UploadFile] = []
+    doc_files: List[UploadFile] = []
+    other_files: List[UploadFile] = []
+    for upload_file in upload_files or []:
+        filename = getattr(upload_file, "filename", "") or ""
+        ext = Path(filename).suffix.lower()
+        content_type = (upload_file.content_type or "").lower()
+        if content_type.startswith("image/") or ext in IMAGE_EXTS:
+            image_files.append(upload_file)
+        elif ext in SUPPORTED_DOC_EXTS:
+            doc_files.append(upload_file)
+        else:
+            other_files.append(upload_file)
+
+    parser = DocumentParser()
+    doc_sections: List[str] = []
+    if doc_files:
+        tmp_dir = Path("tmp_uploads")
+        tmp_dir.mkdir(exist_ok=True)
+        for upload_file in doc_files:
+            filename = upload_file.filename or "附件"
+            suffix = Path(filename).suffix or ""
+            tmp_path = tmp_dir / f"{uuid.uuid4()}{suffix}"
+            content = await upload_file.read()
+            async with aiofiles.open(tmp_path, "wb") as f:
+                await f.write(content)
+            try:
+                text = parser.parse(tmp_path)
+                if text.strip():
+                    doc_sections.append(f"[{filename}]\n{text}")
+                else:
+                    doc_sections.append(f"[{filename}]\n(未提取到内容)")
+            except DocumentParseError as exc:
+                doc_sections.append(f"[{filename}]\n(解析失败: {exc})")
+            except Exception as exc:
+                doc_sections.append(f"[{filename}]\n(解析异常: {exc})")
+            finally:
+                try:
+                    tmp_path.unlink(missing_ok=True)
+                except FileNotFoundError:
+                    pass
+
+    for upload_file in other_files:
+        filename = upload_file.filename or "附件"
+        doc_sections.append(f"[{filename}]\n(不支持的文件类型，未解析)")
+
+    uploaded = await upload_files_to_cos(image_files)
+    user_message = {"role": "user", "content": build_message_content(prompt, uploaded, doc_sections)}
 
     client = AsyncOpenAI(api_key=api_key, base_url=base_url)
     completion = await client.chat.completions.create(

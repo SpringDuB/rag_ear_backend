@@ -4,3 +4,8 @@ AGENTS.md
 node_modules
 
 .vscode
+__pycache__
+
+test*
+tmp_uploads
+keys
