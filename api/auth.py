@@ -6,6 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+import uuid
 
 from config import settings
 from database import get_db
@@ -104,7 +105,9 @@ def register(payload: EncryptedPayload, db: Session = Depends(get_db)):
         if existing_email:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="邮箱已被注册")
 
+    user_id = uuid.uuid4().hex.replace('-', '')
     user = User(
+        id=user_id,
         username=username,
         email=email,
         full_name=full_name,
