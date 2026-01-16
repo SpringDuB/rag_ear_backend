@@ -3,6 +3,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.staticfiles import StaticFiles
 
 from api import auth
 from api.chat.router import router as chat_router
@@ -17,31 +18,32 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title=settings.app_name)
+app.mount("/storage", StaticFiles(directory="backend/storage"), name="storage")
 
 allowed_origins = settings.cors_origins
 if isinstance(allowed_origins, str):
     allowed_origins = [origin.strip() for origin in allowed_origins.split(",") if origin.strip()]
 
 print(allowed_origins)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["Content-Disposition"],  # 关键
-)
 # app.add_middleware(
 #     CORSMiddleware,
-#     allow_origins=allowed_origins or ["*"],
+#     allow_origins=[
+#         "http://localhost:5173",
+#         "http://127.0.0.1:5173",
+#     ],
 #     allow_credentials=True,
 #     allow_methods=["*"],
 #     allow_headers=["*"],
-#     expose_headers=["Content-Disposition"],
+#     expose_headers=["Content-Disposition"],  # 关键
 # )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins or ["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["Content-Disposition"],
+)
 
 app.include_router(auth.router)
 app.include_router(chat_router)

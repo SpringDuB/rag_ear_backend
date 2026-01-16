@@ -385,7 +385,7 @@ def download_file(
         filename=obj.name,
     )
 
-@router.get("/files/download/{id}.pdf")
+@router.get("/files/download/{id}")
 def download_file2(
     id: str,
     db: Session = Depends(get_db)
@@ -400,5 +400,5 @@ def download_file2(
         path=str(abs_path),
         media_type=obj.mime_type or "application/octet-stream",
         filename=obj.name,
-        headers={"Content-Disposition": f'attachment; filename="{obj.name}"'},
+
     )

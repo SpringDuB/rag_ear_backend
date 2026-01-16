@@ -101,7 +101,7 @@
       <option name="presentableId" value="Default" />
       <updated>1768364444687</updated>
       <workItem from="1768364445897" duration="8637000" />
-      <workItem from="1768387377098" duration="28587000" />
+      <workItem from="1768387377098" duration="31964000" />
     </task>
     <servers />
   </component>
@@ -127,6 +127,6 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/rag_ear_backend$main.coverage" NAME="main 覆盖结果" MODIFIED="1768531784639" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/rag_ear_backend$main.coverage" NAME="main 覆盖结果" MODIFIED="1768535408766" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
