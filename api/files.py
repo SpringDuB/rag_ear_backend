@@ -1,4 +1,5 @@
 import hashlib
+import os
 import uuid
 from pathlib import Path
 from typing import Optional
@@ -133,7 +134,8 @@ def create_folder(
         if not parent:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="父文件夹不存在")
 
-    folder = Folder(owner_id=current_user.id, parent_id=parent_id, name=body.name)
+    folder_id = uuid.uuid4().hex.replace('-', '')
+    folder = Folder(id=folder_id, owner_id=current_user.id, parent_id=parent_id, name=body.name)
     db.add(folder)
     try:
         db.commit()
@@ -276,8 +278,8 @@ async def upload_file(
     storage_rel_dir = Path(*parts)
     storage_dir = Path(settings.storage_root) / storage_rel_dir
     storage_dir.mkdir(parents=True, exist_ok=True)
-
-    storage_name = uuid.uuid4().hex
+    name, ext = os.path.splitext(file.filename)
+    storage_name = uuid.uuid4().hex+ext
     storage_rel_path = (storage_rel_dir / storage_name).as_posix()
     storage_abs_path = (Path(settings.storage_root) / storage_rel_dir / storage_name).resolve()
 
