@@ -385,3 +385,43 @@ def download_file(
         media_type=obj.mime_type or "application/octet-stream",
         filename=obj.name,
     )
+
+
+@router.get("/files/download/{id}.pdf")
+def download_file2(
+    id: str,
+    db: Session = Depends(get_db)
+):
+    obj = db.query(FileObject).filter(FileObject.id == id).first()
+
+    abs_path = (Path(settings.storage_root) / obj.storage_path).resolve()
+    if not abs_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文件内容不存在")
+
+    return FileResponse(
+        path=str(abs_path),
+        media_type=obj.mime_type or "application/octet-stream",
+        filename=obj.name,
+        headers={"Content-Disposition": f'attachment; filename="{obj.name}"'},
+    )
+
+
+
+
+@router.get("/files/download/{name}")
+def download_file3(
+    filename: str,
+    db: Session = Depends(get_db)
+):
+    obj = db.query(FileObject).filter(FileObject.name == filename).first()
+
+    abs_path = (Path(settings.storage_root) / obj.storage_path).resolve()
+    if not abs_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文件内容不存在")
+
+    return FileResponse(
+        path=str(abs_path),
+        media_type=obj.mime_type or "application/octet-stream",
+        filename=obj.name,
+        headers={"Content-Disposition": f'attachment; filename="{obj.name}"'},
+    )
