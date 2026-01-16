@@ -43,7 +43,7 @@ class UserLogin(BaseModel):
 
 
 class UserRead(BaseModel):
-    id: int
+    id: str
     username: str
     email: Optional[EmailStr] = None
     full_name: Optional[str] = None
@@ -84,18 +84,18 @@ class ChatRequest(BaseModel):
 # ===== File System =====
 class FolderCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
-    parent_id: int | None = Field(default=None, description="父文件夹ID；为空表示根目录")
+    parent_id: str | None = Field(default=None, description="父文件夹ID；为空表示根目录")
 
 
 class FolderUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255, description="重命名")
-    parent_id: int | None = Field(default=None, description="移动到目标父文件夹；为空表示移动到根目录")
+    parent_id: str | None = Field(default=None, description="移动到目标父文件夹；为空表示移动到根目录")
 
 
 class FolderRead(BaseModel):
-    id: int
-    owner_id: int
-    parent_id: int | None
+    id: str
+    owner_id: str
+    parent_id: str | None
     name: str
     created_at: datetime
     updated_at: datetime
@@ -105,9 +105,9 @@ class FolderRead(BaseModel):
 
 
 class FileRead(BaseModel):
-    id: int
-    owner_id: int
-    folder_id: int | None
+    id: str
+    owner_id: str
+    folder_id: str | None
     name: str
     mime_type: str | None = None
     size: int
@@ -126,4 +126,4 @@ class FolderChildren(BaseModel):
 
 class FileUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255, description="重命名")
-    folder_id: int | None = Field(default=None, description="移动到目标文件夹；为空表示移动到根目录")
+    folder_id: str | None = Field(default=None, description="移动到目标文件夹；为空表示移动到根目录")
