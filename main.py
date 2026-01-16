@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api import auth
 from api.chat.router import router as chat_router
+from api import files
+
+
 from config import settings
 from database import init_db
 from utils.crypto import load_or_create_key_pair
@@ -20,17 +23,30 @@ allowed_origins = settings.cors_origins
 if isinstance(allowed_origins, str):
     allowed_origins = [origin.strip() for origin in allowed_origins.split(",") if origin.strip()]
 
+print(allowed_origins)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins or ["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition"],  # 关键
 )
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=allowed_origins or ["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+#     expose_headers=["Content-Disposition"],
+# )
 
 app.include_router(auth.router)
 app.include_router(chat_router)
-app.include_router(fs_router)
+app.include_router(files.router)
 
 
 @app.on_event("startup")

@@ -14,6 +14,11 @@ from database import get_db
 from models import FileObject, Folder, User
 from schemas import FileRead, FileUpdate, FolderChildren, FolderCreate, FolderRead, FolderUpdate
 from api.auth import get_current_user
+from config import settings
+from database import get_db
+from models import FileObject, Folder, User
+from schemas import FileRead, FileUpdate, FolderChildren, FolderCreate, FolderRead, FolderUpdate
+from api.auth import get_current_user
 
 router = APIRouter(prefix="/api/fs", tags=["FileSystem"])
 
@@ -272,6 +277,7 @@ async def upload_file(
     storage_dir = Path(settings.storage_root) / storage_rel_dir
     storage_dir.mkdir(parents=True, exist_ok=True)
 
+    storage_name = file.filename
     storage_name = file.filename
     storage_rel_path = (storage_rel_dir / storage_name).as_posix()
     storage_abs_path = (Path(settings.storage_root) / storage_rel_dir / storage_name).resolve()

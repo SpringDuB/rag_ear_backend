@@ -51,6 +51,7 @@ def get_current_user(
     token = credentials.credentials
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=["HS256"])
+        print(payload, "###")
         sub = payload.get("sub")
     except JWTError as exc:
         raise HTTPException(
