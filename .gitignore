@@ -9,3 +9,11 @@ __pycache__
 test*
 tmp_uploads
 keys
+*.idea
+backend
+storage
+__pycache__
+
+test*
+tmp_uploads
+keys
