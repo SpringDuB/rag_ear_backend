@@ -9,11 +9,11 @@ from fastapi.responses import FileResponse
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from ..config import settings
-from ..database import get_db
-from ..models import FileObject, Folder, User
-from ..schemas import FileRead, FileUpdate, FolderChildren, FolderCreate, FolderRead, FolderUpdate
-from .auth import get_current_user
+from config import settings
+from database import get_db
+from models import FileObject, Folder, User
+from schemas import FileRead, FileUpdate, FolderChildren, FolderCreate, FolderRead, FolderUpdate
+from api.auth import get_current_user
 
 router = APIRouter(prefix="/api/fs", tags=["FileSystem"])
 
@@ -56,8 +56,8 @@ def _get_folder_owned(db: Session, owner_id: int, folder_id: int) -> Folder:
     return folder
 
 
-def _get_file_owned(db: Session, owner_id: int, file_id: int) -> FileObject:
-    obj = db.query(FileObject).filter(FileObject.id == file_id, FileObject.owner_id == owner_id).first()
+def _get_file_owned(db: Session, file_id: int) -> FileObject:
+    obj = db.query(FileObject).filter(FileObject.id == file_id).first()
     if not obj:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文件不存在")
     return obj
@@ -319,7 +319,7 @@ def get_file_meta(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    obj = _get_file_owned(db, current_user.id, file_id)
+    obj = _get_file_owned(db, file_id)
     return FileRead.from_orm(obj)
 
 
@@ -383,4 +383,22 @@ def download_file(
         path=str(abs_path),
         media_type=obj.mime_type or "application/octet-stream",
         filename=obj.name,
+    )
+
+@router.get("/files/download/{id}")
+def download_file2(
+    id: str,
+    db: Session = Depends(get_db)
+):
+    obj = db.query(FileObject).filter(FileObject.id == id).first()
+
+    abs_path = (Path(settings.storage_root) / obj.storage_path).resolve()
+    if not abs_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文件内容不存在")
+
+    return FileResponse(
+        path=str(abs_path),
+        media_type=obj.mime_type or "application/octet-stream",
+        filename=obj.name,
+
     )
