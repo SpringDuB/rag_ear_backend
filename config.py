@@ -15,9 +15,9 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(default_factory=lambda: ["*"], env="CORS_ORIGINS")
     storage_root: Path = Field(Path("backend/storage"), env="STORAGE_ROOT")
 
-    # class Config:
-    #     env_file = ".env"
-    #     env_file_encoding = "utf-8"
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
 
 settings = Settings()

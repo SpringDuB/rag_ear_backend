@@ -9,11 +9,11 @@ from fastapi.responses import FileResponse
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from ..config import settings
-from ..database import get_db
-from ..models import FileObject, Folder, User
-from ..schemas import FileRead, FileUpdate, FolderChildren, FolderCreate, FolderRead, FolderUpdate
-from .auth import get_current_user
+from config import settings
+from database import get_db
+from models import FileObject, Folder, User
+from schemas import FileRead, FileUpdate, FolderChildren, FolderCreate, FolderRead, FolderUpdate
+from api.auth import get_current_user
 
 router = APIRouter(prefix="/api/fs", tags=["FileSystem"])
 
@@ -272,7 +272,7 @@ async def upload_file(
     storage_dir = Path(settings.storage_root) / storage_rel_dir
     storage_dir.mkdir(parents=True, exist_ok=True)
 
-    storage_name = uuid.uuid4().hex
+    storage_name = file.filename
     storage_rel_path = (storage_rel_dir / storage_name).as_posix()
     storage_abs_path = (Path(settings.storage_root) / storage_rel_dir / storage_name).resolve()
 
@@ -383,4 +383,22 @@ def download_file(
         path=str(abs_path),
         media_type=obj.mime_type or "application/octet-stream",
         filename=obj.name,
+    )
+
+@router.get("/files/download/{id}.pdf")
+def download_file2(
+    id: str,
+    db: Session = Depends(get_db)
+):
+    obj = db.query(FileObject).filter(FileObject.id == id).first()
+
+    abs_path = (Path(settings.storage_root) / obj.storage_path).resolve()
+    if not abs_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文件内容不存在")
+
+    return FileResponse(
+        path=str(abs_path),
+        media_type=obj.mime_type or "application/octet-stream",
+        filename=obj.name,
+        headers={"Content-Disposition": f'attachment; filename="{obj.name}"'},
     )
