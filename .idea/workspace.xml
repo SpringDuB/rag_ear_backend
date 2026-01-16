@@ -4,25 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="56fd4ad1-217f-45d8-b461-21170337a1f6" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/storage/1/1/2/05db460de0d6484f9f1e4aae0831269f" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/storage/1/1/2/05db460de0d6484f9f1e4aae0831269f.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/storage/1/1/2/0b75cd530f6b48ccac5659239cf146e3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/storage/1/1/2/a39220680db84ddfb8a8a68b2ac22c8a" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/storage/1/1/2/aabed82b35364860a1483a557e37efb9" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/storage/1/1/2/e7b5af65d7dc46ac80f8d8fb386b6805" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/storage/1/1/2/f9854e1ad1704f17a7266352f7e1aed6" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/storage/1/rbmcf.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/rag_ear_backend.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/rag_ear_backend.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/auth.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/files.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/files.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas.py" afterDir="false" />
-    </list>
+    <list default="true" id="56fd4ad1-217f-45d8-b461-21170337a1f6" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,7 +28,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "正在合并 dev",
+    "git-widget-placeholder": "dev",
     "last_opened_file_path": "D:/company/rag_ear_backend",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

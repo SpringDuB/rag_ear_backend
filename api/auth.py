@@ -6,6 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+import uuid
 
 from config import settings
 from database import get_db
@@ -61,11 +62,7 @@ def get_current_user(
 
     if not sub:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
-    try:
-        user_id = int(sub)
-    except (TypeError, ValueError) as exc:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload") from exc
-
+    user_id = str(sub)
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
@@ -105,7 +102,9 @@ def register(payload: EncryptedPayload, db: Session = Depends(get_db)):
         if existing_email:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="邮箱已被注册")
 
+    user_id = uuid.uuid4().hex.replace('-', '')
     user = User(
+        id=user_id,
         username=username,
         email=email,
         full_name=full_name,

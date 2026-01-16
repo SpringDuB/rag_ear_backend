@@ -14,6 +14,11 @@ from database import get_db
 from models import FileObject, Folder, User
 from schemas import FileRead, FileUpdate, FolderChildren, FolderCreate, FolderRead, FolderUpdate
 from api.auth import get_current_user
+from config import settings
+from database import get_db
+from models import FileObject, Folder, User
+from schemas import FileRead, FileUpdate, FolderChildren, FolderCreate, FolderRead, FolderUpdate
+from api.auth import get_current_user
 
 router = APIRouter(prefix="/api/fs", tags=["FileSystem"])
 
@@ -141,7 +146,7 @@ def create_folder(
 
 @router.get("/folders/{folder_id}", response_model=FolderRead)
 def get_folder(
-    folder_id: int,
+    folder_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -153,7 +158,7 @@ def get_folder(
 
 @router.patch("/folders/{folder_id}", response_model=FolderRead)
 def update_folder(
-    folder_id: int,
+    folder_id: str,
     body: FolderUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -188,7 +193,7 @@ def update_folder(
 
 @router.delete("/folders/{folder_id}")
 def delete_folder(
-    folder_id: int,
+    folder_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -208,7 +213,7 @@ def delete_folder(
 
 @router.get("/folders/{folder_id}/children", response_model=FolderChildren)
 def list_children(
-    folder_id: int,
+    folder_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -260,13 +265,13 @@ def list_root_children(
 @router.post("/files", response_model=FileRead, status_code=status.HTTP_201_CREATED)
 async def upload_file(
     file: UploadFile = File(..., description="要上传的文件"),
-    folder_id: int | None = Form(default=None, description="目标文件夹ID；为空表示根目录"),
+    folder_id: str | None = Form(default=None, description="目标文件夹ID；为空表示根目录"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     _ensure_storage_root()
     parts = _folder_path_parts(db, current_user.id, folder_id)
-
+    file_id = uuid.uuid4().hex.replace('-', '')
     # store as: <STORAGE_ROOT>/<owner>/<folder-chain>/<uuid>
     storage_rel_dir = Path(*parts)
     storage_dir = Path(settings.storage_root) / storage_rel_dir
@@ -294,6 +299,7 @@ async def upload_file(
         await file.close()
 
     obj = FileObject(
+        id=file_id,
         owner_id=current_user.id,
         folder_id=folder_id,
         name=file.filename or "unnamed",
@@ -315,7 +321,7 @@ async def upload_file(
 
 @router.get("/files/{file_id}", response_model=FileRead)
 def get_file_meta(
-    file_id: int,
+    file_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -325,7 +331,7 @@ def get_file_meta(
 
 @router.patch("/files/{file_id}", response_model=FileRead)
 def update_file(
-    file_id: int,
+    file_id: str,
     body: FileUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -354,7 +360,7 @@ def update_file(
 
 @router.delete("/files/{file_id}")
 def delete_file(
-    file_id: int,
+    file_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -369,7 +375,7 @@ def delete_file(
 
 @router.get("/files/{file_id}/download")
 def download_file(
-    file_id: int,
+    file_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -384,7 +390,6 @@ def download_file(
         media_type=obj.mime_type or "application/octet-stream",
         filename=obj.name,
     )
-
 @router.get("/files/download/{id}")
 def download_file2(
     id: str,
@@ -401,4 +406,25 @@ def download_file2(
         media_type=obj.mime_type or "application/octet-stream",
         filename=obj.name,
 
+    )
+
+
+
+
+@router.get("/files/download/{name}")
+def download_file3(
+    filename: str,
+    db: Session = Depends(get_db)
+):
+    obj = db.query(FileObject).filter(FileObject.name == filename).first()
+
+    abs_path = (Path(settings.storage_root) / obj.storage_path).resolve()
+    if not abs_path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文件内容不存在")
+
+    return FileResponse(
+        path=str(abs_path),
+        media_type=obj.mime_type or "application/octet-stream",
+        filename=obj.name,
+        headers={"Content-Disposition": f'attachment; filename="{obj.name}"'},
     )

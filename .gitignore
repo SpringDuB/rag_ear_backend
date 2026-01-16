@@ -2,6 +2,24 @@
 AGENTS.md
 *.pem
 node_modules
+<<<<<<< HEAD
 .idea/
 .vscode
 backend/storage/
+=======
+
+.vscode
+__pycache__
+
+test*
+tmp_uploads
+keys
+*.idea
+backend
+storage
+__pycache__
+
+test*
+tmp_uploads
+keys
+>>>>>>> 024ec66900e463403c54bba66a6f6c3e64894286

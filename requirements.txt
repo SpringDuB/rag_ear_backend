@@ -13,4 +13,10 @@ openai
 cos-python-sdk-v5==1.9.28
 aiofiles
 python-multipart
-
+pdfplumber
+pdf2image
+pytesseract
+Pillow
+python-docx
+python-pptx
+openpyxl
